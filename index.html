@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Daily Question – MVP</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg-top: #5b2cff;
+      --bg-bottom: #ff7b50;
+      --card-bg: #ffffff;
+      --card-bg-soft: #fdf5f0;
+      --primary: #ff8a3d;
+      --primary-dark: #e56f1f;
+      --secondary: #4856df;
+      --text-main: #2a2340;
+      --text-soft: #f9f3ff;
+      --muted: #c2b5ff;
+      --success: #3fd4a4;
+      --border-radius-lg: 24px;
+      --shadow-soft: 0 18px 36px rgba(15, 0, 54, 0.35);
+      --shadow-small: 0 4px 14px rgba(32, 19, 69, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        system-ui, -system-ui, "Segoe UI", sans-serif;
+      color: var(--text-main);
+      background: radial-gradient(circle at top, #ffd2b2 0, #ff9f7c 20%, #3b245c 70%, #1c1236 100%);
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+    }
+
+    .app-shell {
+      width: 100%;
+      max-width: 430px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 16px 14px 10px;
+      position: relative;
+    }
+
+    .app-top-gradient {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 20% 0%, #ffe1d0 0, transparent 60%),
+                  radial-gradient(circle at 80% 0%, #c7a5ff 0, transparent 60%);
+      opacity: 0.23;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    header.app-header {
+      padding: 6px 10px 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .app-logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 0%, #ffe5c6 0, #ffaf70 32%, #f56b6b 70%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.28);
+      flex-shrink: 0;
+    }
+
+    .app-logo-icon {
+      width: 18px;
+      height: 14px;
+      border-radius: 7px;
+      background: #fff;
+      position: relative;
+    }
+
+    .app-logo-icon::after {
+      content: "?";
+      position: absolute;
+      inset: -1px 0 0 0;
+      font-size: 10px;
+      font-weight: 700;
+      text-align: center;
+      line-height: 14px;
+      color: #ff7b3b;
+    }
+
+    .app-title-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .app-title-text span:first-child {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .app-title-text span:last-child {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    main.app-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 10px; /* keeps content clear of bottom nav */
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .card {
+      background: linear-gradient(145deg, rgba(255,255,255,0.97), rgba(255,249,242,0.97));
+      border-radius: var(--border-radius-lg);
+      padding: 26px 20px 22px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .card.deep {
+      background: linear-gradient(150deg, #5d3ef7, #9344ff, #ff7b3b);
+      color: #fff;
+    }
+
+    .card.centered {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .question-text {
+      font-size: 22px;
+      line-height: 1.3;
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+
+    .question-subtext {
+      font-size: 13px;
+      color: rgba(255,255,255,0.78);
+      margin-bottom: 10px;
+    }
+
+    .primary-btn,
+    .secondary-btn {
+      display: block;
+      width: 100%;
+      border-radius: 999px;
+      padding: 13px 18px;
+      border: none;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 6px;
+    }
+
+    .primary-btn {
+      background: linear-gradient(120deg, var(--primary), #ffc15b);
+      color: #fff;
+      box-shadow: var(--shadow-small);
+    }
+
+    .primary-btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+    }
+
+    .secondary-btn {
+      background: transparent;
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.52);
+    }
+
+    .secondary-btn.dark {
+      color: #3f3271;
+      border-color: rgba(60,48,96,0.2);
+      background: rgba(255,255,255,0.6);
+    }
+
+    .small-caption {
+      margin-top: 18px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.72);
+    }
+
+    .small-caption span {
+      font-weight: 600;
+    }
+
+    /* Answer screen */
+    .nav-back-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      padding: 0 4px;
+      color: #fef5ff;
+      font-size: 13px;
+    }
+
+    .back-pill {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .card.answer-card {
+      background: linear-gradient(145deg, #fff, #fff7f0);
+      margin-top: 2px;
+    }
+
+    .answer-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #594578;
+      margin-bottom: 8px;
+    }
+
+    textarea.answer-input {
+      width: 100%;
+      min-height: 120px;
+      border-radius: 16px;
+      border: none;
+      padding: 12px 12px;
+      font-size: 15px;
+      resize: vertical;
+      outline: none;
+      box-shadow: inset 0 0 0 1px rgba(68, 46, 79, 0.22);
+      background: rgba(255,255,255,0.95);
+    }
+
+    .answer-input::placeholder {
+      color: #b7a4c9;
+    }
+
+    .hint-text {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #a28bbf;
+    }
+
+    .faces-row {
+      display: flex;
+      align-items: center;
+      margin-top: 18px;
+      gap: 10px;
+    }
+
+    .avatars {
+      display: flex;
+    }
+
+    .avatar-circle {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 2px solid #fff0e6;
+      background: linear-gradient(140deg,#ffb58a,#ff8f80);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #462131;
+      font-weight: 700;
+      font-size: 16px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.18);
+      margin-left: -8px;
+    }
+
+    .avatars .avatar-circle:first-child {
+      margin-left: 0;
+    }
+
+    .responses-count {
+      font-size: 12px;
+      color: #b1765f;
+      font-weight: 600;
+    }
+
+    /* Responses screen */
+    .responses-label {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #5d4a7d;
+    }
+
+    .response-list {
+      max-height: 320px;
+      overflow-y: auto;
+      margin-top: 4px;
+      padding-right: 3px;
+    }
+
+    .response-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 10px 11px 9px;
+      font-size: 14px;
+      margin-bottom: 8px;
+      box-shadow: 0 2px 6px rgba(61,23,82,0.16);
+      position: relative;
+    }
+
+    .response-meta {
+      font-size: 11px;
+      color: #aa92c8;
+      margin-top: 4px;
+    }
+
+    .response-tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: rgba(99, 76, 172, 0.06);
+      color: #6b4ac8;
+      margin-right: 4px;
+    }
+
+    .ytag {
+      background: rgba(255, 138, 68, 0.12);
+      color: #ff7b36;
+    }
+
+    .responses-footer {
+      margin-top: 16px;
+      font-size: 12px;
+      color: #9976d3;
+      text-align: center;
+    }
+
+    /* Completion screen */
+    .completion-badge {
+      width: 120px;
+      height: 120px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 0%, #ffeac2 0, #ffaf70 32%, #f0606f 68%, #41256f 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 18px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+      position: relative;
+    }
+
+    .completion-badge::after {
+      content: "✔";
+      font-size: 48px;
+      color: #fff;
+      text-shadow: 0 3px 8px rgba(0,0,0,0.4);
+    }
+
+    .completion-badge-ring {
+      position: absolute;
+      inset: 8px;
+      border-radius: inherit;
+      border: 2px dashed rgba(255,255,255,0.5);
+      opacity: 0.65;
+    }
+
+    .completion-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .completion-text {
+      font-size: 14px;
+      color: rgba(255,255,255,0.78);
+      margin-bottom: 18px;
+    }
+
+    /* History screen */
+    .history-card {
+      background: linear-gradient(145deg, rgba(255,255,255,0.98), rgba(246,235,255,0.98));
+      border-radius: var(--border-radius-lg);
+      padding: 18px 16px 14px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .history-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 10px;
+    }
+
+    .history-title-row h2 {
+      font-size: 16px;
+      margin: 0;
+    }
+
+    .history-title-row span {
+      font-size: 11px;
+      color: #a18bcc;
+    }
+
+    .history-list {
+      max-height: 270px;
+      overflow-y: auto;
+      padding-right: 3px;
+    }
+
+    .history-item {
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(143,117,191,0.18);
+      cursor: pointer;
+    }
+
+    .history-item:last-child {
+      border-bottom: none;
+    }
+
+    .history-date {
+      font-size: 11px;
+      color: #9f8cc8;
+      margin-bottom: 3px;
+    }
+
+    .history-question {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 3px;
+    }
+
+    .history-answer-preview {
+      font-size: 12px;
+      color: #6c567f;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .empty-state {
+      font-size: 13px;
+      color: #9c88c4;
+      text-align: center;
+      padding-top: 10px;
+    }
+
+    /* Bottom nav */
+    nav.bottom-nav {
+      border-radius: 999px;
+      background: linear-gradient(120deg, rgba(29,20,81,0.96), rgba(61,35,112,0.98));
+      padding: 8px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 12px 26px rgba(5,0,25,0.65);
+    }
+
+    .nav-btn {
+      flex: 1;
+      border-radius: 999px;
+      padding: 8px 10px;
+      border: none;
+      background: transparent;
+      color: #d1c8ff;
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .nav-btn span.icon {
+      font-size: 15px;
+    }
+
+    .nav-btn.active {
+      background: radial-gradient(circle at 0 0, #ffcf9f 0, #ff8a3d 40%, #ff5f94 90%);
+      color: #fff;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.4);
+    }
+
+    .streak-pill {
+      font-size: 11px;
+      color: #ffe9c3;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,221,163,0.6);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+
+    .streak-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--success);
+    }
+
+    /* Utility */
+    .fade-soft {
+      animation: fadeSoft 0.2s ease-out;
+    }
+
+    @keyframes fadeSoft {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-height: 640px) {
+      .completion-badge {
+        width: 96px;
+        height: 96px;
+      }
+      .response-list,
+      .history-list {
+        max-height: 220px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <div class="app-top-gradient"></div>
+
+    <header class="app-header">
+      <div class="app-logo">
+        <div class="app-logo-icon"></div>
+      </div>
+      <div class="app-title-text">
+        <span>Daily Question</span>
+        <span>One question a day. That’s it.</span>
+      </div>
+    </header>
+
+    <main class="app-main" id="appMain">
+      <!-- Welcome / Today Screen -->
+      <section class="screen active fade-soft" id="screen-welcome">
+        <div class="card deep centered">
+          <div class="question-text" id="welcomeQuestionText">
+            <!-- filled by JS -->
+          </div>
+          <div class="question-subtext" id="welcomeStateText">
+            1 Question a Day, Everyone Answers.
+          </div>
+
+          <button class="primary-btn" id="btnAnswerNow">Answer Now</button>
+          <button class="secondary-btn" id="btnSeeResponses">See Responses</button>
+
+          <div class="small-caption">
+            Today • <span id="responsesCountLabel">0 responses so far</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Answer Screen -->
+      <section class="screen" id="screen-answer">
+        <div class="nav-back-row">
+          <div class="back-pill" data-back="welcome">&#x2039;</div>
+          <span>Back to Today’s Question</span>
+        </div>
+
+        <div class="card answer-card fade-soft">
+          <div class="question-text" id="answerQuestionText"></div>
+
+          <div class="answer-label">Your answer</div>
+          <textarea
+            id="answerInput"
+            class="answer-input"
+            placeholder="Write your answer here..."
+          ></textarea>
+
+          <div class="hint-text">
+            Take your time. A sentence or a short paragraph is enough.
+          </div>
+
+          <button class="primary-btn" id="btnSubmitAnswer">Submit Answer</button>
+
+          <div class="faces-row">
+            <div class="avatars">
+              <div class="avatar-circle">A</div>
+              <div class="avatar-circle">J</div>
+              <div class="avatar-circle">M</div>
+            </div>
+            <div class="responses-count" id="answerResponseCount">
+              0 responses so far
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Responses Screen -->
+      <section class="screen" id="screen-responses">
+        <div class="nav-back-row">
+          <div class="back-pill" data-back="welcome">&#x2039;</div>
+          <span>Back to Today’s Question</span>
+        </div>
+
+        <div class="card fade-soft">
+          <div class="question-text" id="responsesQuestionText"></div>
+
+          <div class="responses-label">Responses from Today</div>
+          <div class="response-list" id="responseList"></div>
+
+          <div class="responses-footer">
+            Come back tomorrow for a new question.
+          </div>
+
+          <div style="display:flex; gap:8px; margin-top:16px;">
+            <button class="secondary-btn dark" id="btnViewHistorySmall">
+              View History
+            </button>
+            <button class="secondary-btn dark">
+              Invite Friends
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Completion Screen -->
+      <section class="screen" id="screen-complete">
+        <div class="card deep centered fade-soft">
+          <div class="completion-badge">
+            <div class="completion-badge-ring"></div>
+          </div>
+          <div class="completion-title">Great job!</div>
+          <div class="completion-text">
+            You’ve answered today’s question.<br />
+            Come back tomorrow for another one.
+          </div>
+          <button class="primary-btn" id="btnSeeTodayAnswers">
+            See Today’s Answers
+          </button>
+        </div>
+      </section>
+
+      <!-- History Screen -->
+      <section class="screen" id="screen-history">
+        <div class="history-card fade-soft">
+          <div class="history-title-row">
+            <h2>Answer History</h2>
+            <span id="historySubLabel">Last 7 days</span>
+          </div>
+          <div class="history-list" id="historyList"></div>
+          <div class="empty-state" id="historyEmptyState">
+            Your past answers will appear here once you’ve answered a few questions.
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+      <button class="nav-btn active" id="navToday">
+        <span class="icon">❓</span>
+        Today
+      </button>
+      <button class="nav-btn" id="navHistory">
+        <span class="icon">📅</span>
+        History
+      </button>
+      <div class="streak-pill" id="streakPill">
+        <div class="streak-dot"></div>
+        <span id="streakText">0 day streak</span>
+      </div>
+    </nav>
+  </div>
+
+  <script>
+    // --- Data -----------------------------------------------------------------
+    const QUESTIONS = [
+      "What’s something you’ve always dreamed of doing?",
+      "If you could live one day on repeat, which day would it be?",
+      "What small habit has changed your life the most?",
+      "If fear disappeared for 24 hours, what would you try?",
+      "What’s one decision you’re proud you made?",
+      "Which place feels most like home to you, and why?",
+      "What’s a question you wish people asked you more often?"
+    ];
+
+    const SAMPLE_RESPONSES = [
+      [
+        "Travel the world and see every continent.",
+        "Write a novel and publish it one day.",
+        "Open my own cozy little café by the beach."
+      ],
+      [
+        "The day my best friend and I road-tripped with no plan.",
+        "A quiet Sunday morning with coffee and no obligations.",
+        "The day I finally felt proud of myself."
+      ],
+      [
+        "Writing down three things I’m grateful for each night.",
+        "Going for a 10-minute walk after lunch.",
+        "Turning my phone off an hour before bed."
+      ],
+      [
+        "Speak on a stage in front of thousands of people.",
+        "Start the business idea I’ve been sitting on for years.",
+        "Ask someone important to me a hard, honest question."
+      ],
+      [
+        "Leaving a job that looked good on paper but felt wrong.",
+        "Moving to a new city where I didn’t know anyone.",
+        "Choosing therapy when I could have kept ignoring things."
+      ],
+      [
+        "Walking around my grandparents’ old neighborhood.",
+        "Any place with books, coffee, and soft light.",
+        "A little bench near the river in my hometown."
+      ],
+      [
+        "“What have you changed your mind about recently?”",
+        "“How are you really doing, underneath the automatic answer?”",
+        "“What are you curious about lately?”"
+      ]
+    ];
+
+    // --- Helpers -------------------------------------------------------------
+    function formatDateKey(date = new Date()) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, "0");
+      const d = String(date.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+
+    function getTodayQuestionIndex(date = new Date()) {
+      const daysSinceEpoch = Math.floor(date.getTime() / (1000 * 60 * 60 * 24));
+      return daysSinceEpoch % QUESTIONS.length;
+    }
+
+    function getStoredAnswer(dateKey) {
+      try {
+        return JSON.parse(localStorage.getItem("dq_answer_" + dateKey)) || null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function setStoredAnswer(dateKey, answerObj) {
+      localStorage.setItem("dq_answer_" + dateKey, JSON.stringify(answerObj));
+    }
+
+    function getStreak() {
+      const today = new Date();
+      let streak = 0;
+      for (let i = 0; i < 365; i++) {
+        const d = new Date(today.getTime() - i * 24 * 60 * 60 * 1000);
+        const key = formatDateKey(d);
+        if (getStoredAnswer(key)) {
+          streak++;
+        } else {
+          // break once we hit the first gap
+          break;
+        }
+      }
+      return streak;
+    }
+
+    function updateStreakUI() {
+      const streak = getStreak();
+      const streakText = document.getElementById("streakText");
+      const pill = document.getElementById("streakPill");
+      streakText.textContent =
+        streak === 0 ? "No streak yet" : `${streak} day streak`;
+      pill.style.opacity = streak === 0 ? 0.8 : 1;
+    }
+
+    // --- Navigation ----------------------------------------------------------
+    const screens = {
+      welcome: document.getElementById("screen-welcome"),
+      answer: document.getElementById("screen-answer"),
+      responses: document.getElementById("screen-responses"),
+      complete: document.getElementById("screen-complete"),
+      history: document.getElementById("screen-history")
+    };
+
+    const navToday = document.getElementById("navToday");
+    const navHistory = document.getElementById("navHistory");
+
+    function showScreen(name) {
+      Object.keys(screens).forEach((key) => {
+        screens[key].classList.toggle("active", key === name);
+      });
+
+      if (name === "welcome" || name === "answer" || name === "responses" || name === "complete") {
+        navToday.classList.add("active");
+        navHistory.classList.remove("active");
+      } else if (name === "history") {
+        navToday.classList.remove("active");
+        navHistory.classList.add("active");
+      }
+
+      if (name === "history") {
+        renderHistory();
+      }
+    }
+
+    // --- Rendering Today State ----------------------------------------------
+    const todayDateKey = formatDateKey();
+    const todayQuestionIndex = getTodayQuestionIndex();
+    const todayQuestion = QUESTIONS[todayQuestionIndex];
+
+    const welcomeQuestionText = document.getElementById("welcomeQuestionText");
+    const welcomeStateText = document.getElementById("welcomeStateText");
+    const responsesCountLabel = document.getElementById("responsesCountLabel");
+    const answerQuestionText = document.getElementById("answerQuestionText");
+    const responsesQuestionText = document.getElementById("responsesQuestionText");
+    const answerResponseCount = document.getElementById("answerResponseCount");
+
+    function renderTodayState() {
+      const stored = getStoredAnswer(todayDateKey);
+      const baseCount = SAMPLE_RESPONSES[todayQuestionIndex].length;
+      const totalCount = baseCount + (stored ? 1 : 0);
+
+      welcomeQuestionText.textContent = todayQuestion;
+      answerQuestionText.textContent = todayQuestion;
+      responsesQuestionText.textContent = todayQuestion;
+
+      responsesCountLabel.textContent =
+        totalCount === 1 ? "1 response so far" : `${totalCount} responses so far`;
+      answerResponseCount.textContent = responsesCountLabel.textContent;
+
+      if (stored) {
+        welcomeStateText.textContent = "You’ve already answered today’s question.";
+      } else {
+        welcomeStateText.textContent = "1 Question a Day, Everyone Answers.";
+      }
+
+      // Pre-fill answer textarea if we have an answer
+      const answerInput = document.getElementById("answerInput");
+      answerInput.value = stored ? stored.answer : "";
+    }
+
+    // --- Responses Rendering -------------------------------------------------
+    function renderResponses() {
+      const responseList = document.getElementById("responseList");
+      responseList.innerHTML = "";
+
+      const stored = getStoredAnswer(todayDateKey);
+      if (stored) {
+        const youCard = document.createElement("div");
+        youCard.className = "response-card";
+        youCard.innerHTML = `
+          <div>${stored.answer}</div>
+          <div class="response-meta">
+            <span class="response-tag ytag">You</span>
+            Saved at ${new Date(stored.timestamp).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit"
+            })}
+          </div>
+        `;
+        responseList.appendChild(youCard);
+      }
+
+      const samples = SAMPLE_RESPONSES[todayQuestionIndex];
+      samples.forEach((text, idx) => {
+        const el = document.createElement("div");
+        el.className = "response-card";
+        const tag =
+          idx === 0 ? "Most liked" : idx === 1 ? "Popular" : "From the community";
+        el.innerHTML = `
+          <div>${text}</div>
+          <div class="response-meta">
+            <span class="response-tag">${tag}</span>
+          </div>
+        `;
+        responseList.appendChild(el);
+      });
+    }
+
+    // --- History Rendering ---------------------------------------------------
+    function renderHistory() {
+      const list = document.getElementById("historyList");
+      const empty = document.getElementById("historyEmptyState");
+      list.innerHTML = "";
+
+      const today = new Date();
+      let hasAny = false;
+
+      for (let i = 0; i < 30; i++) {
+        const d = new Date(today.getTime() - i * 24 * 60 * 60 * 1000);
+        const key = formatDateKey(d);
+        const stored = getStoredAnswer(key);
+        if (!stored) continue;
+        hasAny = true;
+
+        const idx = getTodayQuestionIndex(d);
+        const question = QUESTIONS[idx];
+
+        const item = document.createElement("div");
+        item.className = "history-item";
+        item.innerHTML = `
+          <div class="history-date">${d.toLocaleDateString()}</div>
+          <div class="history-question">${question}</div>
+          <div class="history-answer-preview">${stored.answer}</div>
+        `;
+        item.addEventListener("click", () => {
+          // Quick peek: put into answer/response view
+          if (key === todayDateKey) {
+            showScreen("responses");
+            renderResponses();
+          } else {
+            alert("History detail view is simple in this MVP.\n\nQuestion:\n" + question +
+              "\n\nYour answer:\n" + stored.answer);
+          }
+        });
+        list.appendChild(item);
+      }
+
+      empty.style.display = hasAny ? "none" : "block";
+    }
+
+    // --- Event Wiring --------------------------------------------------------
+    document.getElementById("btnAnswerNow").addEventListener("click", () => {
+      showScreen("answer");
+    });
+
+    document.getElementById("btnSeeResponses").addEventListener("click", () => {
+      renderResponses();
+      showScreen("responses");
+    });
+
+    document
+      .getElementById("btnSubmitAnswer")
+      .addEventListener("click", () => {
+        const input = document.getElementById("answerInput");
+        const text = input.value.trim();
+        if (!text) {
+          alert("Write at least a short answer before submitting.");
+          return;
+        }
+
+        const payload = {
+          answer: text,
+          timestamp: Date.now()
+        };
+        setStoredAnswer(todayDateKey, payload);
+        renderTodayState();
+        updateStreakUI();
+        showScreen("complete");
+      });
+
+    document
+      .getElementById("btnSeeTodayAnswers")
+      .addEventListener("click", () => {
+        renderResponses();
+        showScreen("responses");
+      });
+
+    // Back buttons
+    document.querySelectorAll("[data-back]").forEach((el) => {
+      el.addEventListener("click", () => {
+        const target = el.getAttribute("data-back");
+        if (target === "welcome") {
+          showScreen("welcome");
+        }
+      });
+    });
+
+    // Bottom nav
+    navToday.addEventListener("click", () => {
+      showScreen("welcome");
+    });
+
+    navHistory.addEventListener("click", () => {
+      showScreen("history");
+    });
+
+    document
+      .getElementById("btnViewHistorySmall")
+      .addEventListener("click", () => {
+        showScreen("history");
+      });
+
+    // Initial render
+    renderTodayState();
+    updateStreakUI();
+  </script>
+</body>
+</html>
